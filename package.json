@@ -1,0 +1,23 @@
+{
+  "name": "bitquest",
+  "version": "1.0.0",
+  "private": true,
+  "description": "BitQuest: a top-down pixel RPG to learn JavaScript, TypeScript, Java, Node.js, Python, Git, GitHub, Linux and DevOps.",
+  "workspaces": [
+    "client",
+    "server"
+  ],
+  "scripts": {
+    "dev": "concurrently -n server,client -c magenta,cyan \"npm run dev -w server\" \"npm run dev -w client\"",
+    "build": "npm run build -w client",
+    "start": "npm run start -w server",
+    "typecheck": "npm run typecheck -w server && npm run typecheck -w client",
+    "validate": "npm run validate -w server"
+  },
+  "devDependencies": {
+    "concurrently": "^9.1.2"
+  },
+  "engines": {
+    "node": ">=22.13"
+  }
+}
