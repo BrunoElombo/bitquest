@@ -179,8 +179,15 @@ export const aiLand: LandContent = {
     2: { frame: DUNGEON.spider, name: { en: 'Overfit Spider', fr: 'Araignée Surapprentie' }, speed: 38, tint: 0xff9ce6 },
     3: { frame: DUNGEON.ghost, name: { en: 'Hallucination Wraith', fr: 'Spectre Hallucination' }, speed: 44, tint: 0xc9a0ff },
   },
+  zones: [
+    { name: { en: 'the Training Fields', fr: 'les Champs d’Entraînement' }, area: { x: 0, y: 0, w: 18, h: 44 }, guide: 'nova', tiers: [1] },
+    { name: { en: 'the Neural Plaza', fr: 'la Place Neuronale' }, area: { x: 18, y: 11, w: 30, h: 22 }, guide: 'gradient', tiers: [1, 2] },
+    { name: { en: 'the Data Archives', fr: 'les Archives de Données' }, area: { x: 18, y: 0, w: 30, h: 11 }, guide: 'neura', tiers: [2, 3] },
+    { name: { en: 'the Vector Library', fr: 'la Bibliothèque Vectorielle' }, area: { x: 18, y: 33, w: 30, h: 11 }, guide: 'vector', tiers: [2, 3] },
+    { name: { en: 'the Transformer Tower', fr: 'la Tour Transformer' }, area: { x: 48, y: 0, w: 16, h: 44 }, guide: 'ethica', tiers: [3, 4] },
+  ],
   signs: {
-    fields: { en: 'Training Fields → Neural Plaza', fr: 'Champs d’Entraînement → Place Neuronale' },
+    fields:{ en: 'Training Fields → Neural Plaza', fr: 'Champs d’Entraînement → Place Neuronale' },
     archives: { en: '↑ Data Archives · Data Lake', fr: '↑ Archives de Données · Lac de Données' },
     tower: { en: 'Transformer Tower → (danger: Oracle)', fr: 'Tour Transformer → (danger : Oracle)' },
   },

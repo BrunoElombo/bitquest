@@ -5,7 +5,7 @@ A top-down pixel-art RPG where you learn **JavaScript, TypeScript, Java, Node.js
 Lord Bugmancer shattered the Source Crystal into ten shards and locked Princess Ada in the Kernel Citadel. Each Land (one per course) is corrupted by a guardian boss. In each Land you:
 
 - explore the map with the **arrow keys / WASD / ZQSD, a gamepad, or the on-screen touch pad**;
-- talk to its people (each teaches a concept);
+- talk to its people. Each Land is split into 5 zones, each with a guide. At every play session, all the Land's concepts are dealt at random to the zones (easy near the entrance, expert near the boss). The zone's monsters and chest then ask random questions on its concepts, and its guide teaches every one of them, in random order: a nudge before you solve it, the full lesson (✓) after. Together the guides teach every concept of the language;
 - squash roaming **bugs**: touch one and you must answer its timed challenge;
 - solve the **3 enigma shrines** to read Ada's letters, which breaks the boss gate's seal;
 - open **chests** (coding puzzles, including real JS/TS/Python run in the browser);

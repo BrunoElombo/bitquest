@@ -12,7 +12,8 @@
     "build": "npm run build -w client",
     "start": "npm run start -w server",
     "typecheck": "npm run typecheck -w server && npm run typecheck -w client",
-    "validate": "npm run validate -w server"
+    "validate": "npm run validate -w server",
+    "verify": "npm run typecheck && npm run build && npm run dev"
   },
   "devDependencies": {
     "concurrently": "^9.1.2"

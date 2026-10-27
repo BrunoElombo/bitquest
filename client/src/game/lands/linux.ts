@@ -177,8 +177,15 @@ export const linuxLand: LandContent = {
     2: { frame: DUNGEON.bat, name: { en: 'Segfault Bat', fr: 'Chauve-souris Segfault' }, speed: 38, tint: 0xbfe8ff },
     3: { frame: DUNGEON.cyclops, name: { en: 'Daemon Cyclops', fr: 'Cyclope Démon' }, speed: 40, tint: 0xc8d8ff },
   },
+  zones: [
+    { name: { en: 'the west slopes', fr: 'les pentes ouest' }, area: { x: 0, y: 0, w: 18, h: 44 }, guide: 'shelly', tiers: [1] },
+    { name: { en: 'the /home camp', fr: 'le camp /home' }, area: { x: 18, y: 12, w: 30, h: 21 }, guide: 'chmod', tiers: [1, 2] },
+    { name: { en: 'the Bash Caves', fr: 'les Grottes Bash' }, area: { x: 18, y: 0, w: 30, h: 12 }, guide: 'grep', tiers: [2, 3] },
+    { name: { en: 'the /tmp Lake', fr: 'le Lac /tmp' }, area: { x: 18, y: 33, w: 30, h: 11 }, guide: 'piper', tiers: [2, 3] },
+    { name: { en: 'Kernel Pass', fr: 'le Col du Noyau' }, area: { x: 48, y: 0, w: 16, h: 44 }, guide: 'sigrid', tiers: [3, 4] },
+  ],
   signs: {
-    home: { en: '/home → Penguin Peaks camp', fr: '/home → camp des Pics du Pingouin' },
+    home:{ en: '/home → Penguin Peaks camp', fr: '/home → camp des Pics du Pingouin' },
     pass: { en: 'Kernel Pass → (danger: Golem)', fr: 'Col du Noyau → (danger : Golem)' },
   },
   story: {

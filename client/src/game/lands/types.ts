@@ -1,6 +1,6 @@
 import type Phaser from 'phaser';
 import type { LandId } from '@shared/game';
-import type { L } from '@shared/types';
+import type { L, Tier } from '@shared/types';
 import type { Scene as MusicScene } from '../../audio/music';
 import type { DialogueLine } from '../../store';
 import type { MapDraft } from '../mapBuilder';
@@ -52,6 +52,23 @@ export interface BossArenaDef {
   runeRows?: [number, number];
 }
 
+/**
+ * A part of the map. Each play session, every challenge of the Land is dealt at random to a
+ * zone of a matching difficulty; the zone's monsters and chest ask random questions from that
+ * share, and the person living there (its guide) teaches all of its concepts. Together the
+ * guides of a Land therefore teach every concept the Land can ask.
+ */
+export interface ZoneDef {
+  /** Used in the guide's lines: "Here in {name}…" (include the article: "the north park"). */
+  name: L;
+  /** Tile rectangle; monsters and chests whose marker lies inside belong to the zone. */
+  area: { x: number; y: number; w: number; h: number };
+  /** Key in `npcs` of the person who knows this zone. */
+  guide: string;
+  /** Challenge tiers this zone can receive (easy near the entrance, expert near the boss). */
+  tiers: Tier[];
+}
+
 /** Everything that makes a Land unique: its map, people, monsters and story. */
 export interface LandContent {
   id: LandId;
@@ -61,6 +78,8 @@ export interface LandContent {
   draft: () => MapDraft;
   npcs: Record<string, NpcDef>;
   monsters: Record<1 | 2 | 3, MonsterDef>;
+  /** Which questions are asked where, and who gives the hints for them. */
+  zones: ZoneDef[];
   signs: Record<string, L>;
   story: {
     intro: DialogueLine[];

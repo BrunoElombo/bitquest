@@ -176,8 +176,15 @@ export const javascriptLand: LandContent = {
     2: { frame: DUNGEON.bat, name: { en: 'NaN Bat', fr: 'Chauve-souris NaN' }, speed: 38 },
     3: { frame: DUNGEON.ghost, name: { en: 'Callback Ghost', fr: 'Fantôme Callback' }, speed: 44, tint: 0xd6b0ff },
   },
+  zones: [
+    { name: { en: 'the outskirts', fr: 'les faubourgs' }, area: { x: 0, y: 0, w: 18, h: 44 }, guide: 'lumi', tiers: [1] },
+    { name: { en: 'the central plaza', fr: 'la place centrale' }, area: { x: 18, y: 12, w: 30, h: 20 }, guide: 'hoister', tiers: [1, 2] },
+    { name: { en: 'the north park', fr: 'le parc nord' }, area: { x: 18, y: 0, w: 30, h: 12 }, guide: 'kidnan', tiers: [2, 3] },
+    { name: { en: 'the south market', fr: 'le marché du sud' }, area: { x: 18, y: 32, w: 30, h: 12 }, guide: 'promise', tiers: [2, 3] },
+    { name: { en: 'the Async Harbor', fr: 'le Port Asynchrone' }, area: { x: 48, y: 0, w: 16, h: 44 }, guide: 'closure', tiers: [3, 4] },
+  ],
   signs: {
-    city: { en: 'Scriptopolis → the city that never blocks', fr: 'Scriptopolis → la ville qui ne bloque jamais' },
+    city:{ en: 'Scriptopolis → the city that never blocks', fr: 'Scriptopolis → la ville qui ne bloque jamais' },
     harbor: { en: 'Async Harbor → (danger: Kraken)', fr: 'Port Asynchrone → (danger : Kraken)' },
   },
   story: {

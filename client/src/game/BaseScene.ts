@@ -283,7 +283,7 @@ export abstract class BaseScene extends Phaser.Scene {
   async challenge(
     type: EncounterType,
     targetId: string,
-    opts: { title: L; portrait?: number; maxTier: Tier; preferTier?: Tier },
+    opts: { title: L; portrait?: number; maxTier: Tier; preferTier?: Tier; only?: string[] },
   ): Promise<EncounterResponse | null> {
     const land = this.land!;
     const state = useGame.getState();
@@ -294,6 +294,7 @@ export abstract class BaseScene extends Phaser.Scene {
       preferTier: opts.preferTier,
       solved: new Set(state.solved),
       recent: this.recent,
+      only: opts.only,
     });
     if (!c) return null;
     this.recent = [c.id, ...this.recent].slice(0, 10);

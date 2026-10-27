@@ -304,9 +304,17 @@ export function pickChallenge(opts: {
   solved: Set<string>;
   recent: string[];
   preferTier?: Tier;
+  /**
+   * Restricts the draw to these challenge ids (a zone's monsters or a chest's puzzle), so the
+   * people of that zone can give hints for exactly what will be asked. The tier cap does not
+   * apply to them; an empty or unusable list falls back to the whole Land.
+   */
+  only?: string[];
 }): Challenge | null {
   const kinds = ENCOUNTER_KINDS[opts.type];
-  const pool = CHALLENGES_BY_TRACK[opts.land].filter((c) => kinds.includes(c.kind) && c.tier <= opts.maxTier);
+  const all = CHALLENGES_BY_TRACK[opts.land].filter((c) => kinds.includes(c.kind));
+  const zone = opts.only?.length ? all.filter((c) => opts.only!.includes(c.id)) : [];
+  const pool = zone.length ? zone : all.filter((c) => c.tier <= opts.maxTier);
   if (!pool.length) return null;
   const fresh = pool.filter((c) => !opts.recent.includes(c.id));
   const candidates = fresh.length ? fresh : pool;

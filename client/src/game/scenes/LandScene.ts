@@ -10,6 +10,7 @@ import { BaseScene } from '../BaseScene';
 import { ui } from '../bridge';
 import { LAND_CONTENT } from '../lands';
 import type { LandContent, MonsterDef } from '../lands/types';
+import { dealZones, guideLines, zoneAt, zonePool, type ZoneDeal } from '../lands/zones';
 import { at, type Marker } from '../mapBuilder';
 
 export interface LandSceneData {
@@ -33,6 +34,8 @@ interface Monster {
   home: Phaser.Math.Vector2;
   nextTurn: number;
   id: string;
+  /** Questions of the zone it roams (empty: any question of the Land). */
+  only: string[];
 }
 
 export class LandScene extends BaseScene {
@@ -42,6 +45,10 @@ export class LandScene extends BaseScene {
   private checkpointFlags = new Map<string, Phaser.GameObjects.Image>();
   private gateMarker?: Marker;
   private talkCount = new Map<string, number>();
+  /** Lines each person has not said yet in the current round, so talks come in random order. */
+  private talkBag = new Map<string, number[]>();
+  private lastTalk = new Map<string, number>();
+  private deal!: ZoneDeal;
 
   constructor() {
     super('land');
@@ -59,6 +66,7 @@ export class LandScene extends BaseScene {
     this.checkpointFlags.clear();
     const d = content.draft();
     const markers = d.markers;
+    this.deal = dealZones(content, markers);
     const progress = this.save.lands[data.land];
 
     const find = (type: Marker['type'], id?: string) => markers.find((m) => m.type === type && (id === undefined || m.id === id));
@@ -153,8 +161,28 @@ export class LandScene extends BaseScene {
         await this.say(this.content.story.afterVictory);
         return;
       }
-      await this.say(n === 0 ? def.first : def.tips[(n - 1) % def.tips.length]);
+      // Guides first introduce their zone, then teach its concepts and give their tips in random order.
+      const zone = guideLines(this.content, id, this.content.draft().markers, this.deal, new Set(useGame.getState().solved));
+      if (n === 0) {
+        await this.say([...def.first, ...zone.briefing]);
+        return;
+      }
+      const talks = [...zone.lessons.map((l) => [l]), ...def.tips];
+      await this.say(talks[this.nextTalk(id, talks.length)]);
     });
+  }
+
+  /** Draws the next line index from a shuffled round, never repeating the last one said. */
+  private nextTalk(id: string, count: number): number {
+    let bag = this.talkBag.get(id) ?? [];
+    if (!bag.length || bag.some((i) => i >= count)) {
+      bag = Phaser.Utils.Array.Shuffle([...Array(count).keys()]);
+      if (count > 1 && bag[bag.length - 1] === this.lastTalk.get(id)) bag.unshift(bag.pop()!);
+    }
+    const i = bag.pop()!;
+    this.talkBag.set(id, bag);
+    this.lastTalk.set(id, i);
+    return i;
   }
 
   private addSign(id: string, x: number, y: number) {
@@ -209,7 +237,10 @@ export class LandScene extends BaseScene {
     const chest = this.physics.add.staticSprite(x, y, 'dungeon', opened() ? DUNGEON.chestOpen : DUNGEON.chest);
     chest.setDepth(10 + y / 1000);
     this.physics.add.collider(this.player, chest);
-    const index = this.content.draft().markers.filter((m) => m.type === 'chest').findIndex((m) => m.id === id);
+    const markers = this.content.draft().markers;
+    const index = markers.filter((m) => m.type === 'chest').findIndex((m) => m.id === id);
+    const marker = markers.find((m) => m.type === 'chest' && m.id === id);
+    const puzzles = zonePool(this.deal, marker && zoneAt(this.content, marker.x, marker.y), 'chest');
 
     this.interactables.push({
       x,
@@ -224,6 +255,7 @@ export class LandScene extends BaseScene {
           portrait: DUNGEON.chest,
           maxTier: 4,
           preferTier: Math.min(4, 2 + index) as Tier,
+          only: puzzles,
         });
         if (r?.events.includes('chestOpened')) {
           chest.setFrame(DUNGEON.chestOpen);
@@ -261,7 +293,8 @@ export class LandScene extends BaseScene {
     sprite.setDepth(10 + y / 1000);
     this.physics.add.collider(sprite, this.built.deco);
     this.physics.add.collider(sprite, this.built.ground);
-    const mon: Monster = { sprite, def, tier, home: new Phaser.Math.Vector2(x, y), nextTurn: 0, id: `${m.x}-${m.y}` };
+    const only = zonePool(this.deal, zoneAt(this.content, m.x, m.y), 'monster');
+    const mon: Monster = { sprite, def, tier, home: new Phaser.Math.Vector2(x, y), nextTurn: 0, id: `${m.x}-${m.y}`, only };
     this.monsters.push(mon);
     this.tweens.add({ targets: sprite, scaleY: 0.85, yoyo: true, repeat: -1, duration: 260 + tier * 60 });
     this.physics.add.overlap(this.player, sprite, () => void this.onMonsterTouch(mon));
@@ -274,6 +307,7 @@ export class LandScene extends BaseScene {
       portrait: mon.def.frame,
       maxTier: mon.tier as Tier,
       preferTier: mon.tier as Tier,
+      only: mon.only,
     });
     if (!r || r.gameOver) return;
     if (r.correct) {

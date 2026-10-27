@@ -188,8 +188,15 @@ export const pythonLand: LandContent = {
     2: { frame: DUNGEON.spider, name: { en: 'Tab Spider', fr: 'Araignée Tabulation' }, speed: 38 },
     3: { frame: DUNGEON.ghost, name: { en: 'Traceback Specter', fr: 'Spectre Traceback' }, speed: 44, tint: 0xa8ff9c },
   },
+  zones: [
+    { name: { en: 'the jungle trail', fr: 'le sentier de la jungle' }, area: { x: 0, y: 0, w: 18, h: 44 }, guide: 'mossa', tiers: [1] },
+    { name: { en: 'the Temple of Indentation', fr: 'le Temple de l’Indentation' }, area: { x: 18, y: 12, w: 29, h: 20 }, guide: 'slice', tiers: [1, 2] },
+    { name: { en: 'the Garden of Lists', fr: 'le Jardin des Listes' }, area: { x: 18, y: 0, w: 29, h: 12 }, guide: 'listcomp', tiers: [2, 3] },
+    { name: { en: 'the Ruins of the Dict', fr: 'les Ruines du Dict' }, area: { x: 18, y: 32, w: 29, h: 12 }, guide: 'dicta', tiers: [2, 3] },
+    { name: { en: 'the Sunken Sanctum', fr: 'le Sanctuaire Englouti' }, area: { x: 47, y: 0, w: 17, h: 44 }, guide: 'olddef', tiers: [3, 4] },
+  ],
   signs: {
-    temple: { en: 'Temple of Indentation → four spaces, no tabs', fr: 'Temple de l’Indentation → quatre espaces, pas de tabulations' },
+    temple:{ en: 'Temple of Indentation → four spaces, no tabs', fr: 'Temple de l’Indentation → quatre espaces, pas de tabulations' },
     sanctum: { en: 'Sunken Sanctum → (danger: Serpent)', fr: 'Sanctuaire Englouti → (danger : Serpent)' },
   },
   story: {
