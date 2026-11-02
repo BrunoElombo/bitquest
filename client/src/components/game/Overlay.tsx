@@ -1,3 +1,5 @@
+import { checkAnswer } from '@shared/check';
+import { CRASH_COURSES } from '@shared/crashcourse';
 import { HEROES, LAND_IDS, SHRINES_PER_LAND, type EncounterResponse } from '@shared/game';
 import type { AnswerValue } from '@shared/types';
 import { useCallback, useEffect, useRef, useState } from 'react';
@@ -14,6 +16,8 @@ import { Sprite } from '../Sprite';
 export function Overlay() {
   const dialogue = useGame((s) => s.dialogue);
   const encounter = useGame((s) => s.encounter);
+  const training = useGame((s) => s.training);
+  const confirm = useGame((s) => s.confirm);
   const pause = useGame((s) => s.pause);
   const gameOver = useGame((s) => s.gameOver);
   useGlobalShortcuts();
@@ -24,6 +28,8 @@ export function Overlay() {
       <Banner />
       {dialogue && <DialogueBox key={dialogue.lines.length + (dialogue.lines[0]?.text.en ?? '')} />}
       {encounter && <EncounterModal key={encounter.req.challenge.id + encounter.req.targetId} req={encounter.req} />}
+      {training && <TrainingModal key={training.req.challenge.id + training.req.index} />}
+      {confirm && <ConfirmModal />}
       {pause && <PauseMenu />}
       {gameOver && <GameOverScreen />}
       <Toasts />
@@ -43,6 +49,8 @@ function Hud() {
   const hero = HEROES[save.hero];
   const slots = Math.max(save.maxHearts, save.hearts);
   const land = place?.land ? save.lands[place.land] : null;
+  const course = place?.land ? CRASH_COURSES[place.land] : null;
+  const dojoDone = course ? course.modules.filter((m) => save.flags[`dojo:${course.track}:${m.id}`]).length : 0;
 
   return (
     <div className="pointer-events-none absolute inset-x-0 top-0 z-20 flex flex-wrap items-start gap-3 p-2 sm:p-3">
@@ -74,6 +82,11 @@ function Hud() {
                 ✉
               </span>
             ))}
+            {course && (
+              <span className="ml-2 border-2 border-arcade-border px-1 text-sm text-neon-yellow" title={course.title.en}>
+                🥋 {dojoDone}/{course.modules.length}
+              </span>
+            )}
           </div>
         )}
         {boss && (
@@ -108,7 +121,7 @@ function Hud() {
 }
 
 /** Whether a React overlay currently owns the input (the world is frozen). */
-const useOverlayOpen = () => useGame((s) => !!(s.dialogue || s.encounter || s.pause || s.gameOver));
+const useOverlayOpen = () => useGame((s) => !!(s.dialogue || s.encounter || s.training || s.confirm || s.pause || s.gameOver));
 
 /** Clickable game controls under the keys panel: pause, sound, fullscreen, help, quit. */
 function ControlBar() {
@@ -499,6 +512,111 @@ function EncounterModal({ req }: { req: EncounterUIRequest }) {
         {phase === 'result' && result && (
           <Feedback c={req.challenge} correct={result.correct} timedOut={timedOut} points={result.pointsDelta} onNext={close} />
         )}
+      </div>
+    </div>
+  );
+}
+
+// ------------------------------------------------------------------ dojo training
+
+/** A dojo drill: untimed, no points, no hearts. Purely formative. */
+function TrainingModal() {
+  const { t, tl } = useT();
+  const { req, resolve } = useGame((s) => s.training!);
+  const [phase, setPhase] = useState<'answering' | 'result'>('answering');
+  const [verdict, setVerdict] = useState(false);
+  const [hint, setHint] = useState(false);
+
+  const leave = () => resolve({ correct: false, skipped: true });
+  const next = () => resolve({ correct: verdict, skipped: false });
+
+  const submit = useCallback(
+    (answer: AnswerValue) => {
+      if (phase !== 'answering') return;
+      const ok = checkAnswer(req.challenge, answer);
+      music.sfx(ok ? 'correct' : 'wrong');
+      setVerdict(ok);
+      setPhase('result');
+    },
+    [phase, req.challenge],
+  );
+
+  const done = req.index + (phase === 'result' ? 1 : 0);
+
+  return (
+    <div className="absolute inset-0 z-40 overflow-y-auto bg-arcade-deep/85 p-3 backdrop-blur-[2px]">
+      <div className="mx-auto max-w-3xl animate-pop pt-12">
+        <div className="mb-3 flex items-start gap-3">
+          {req.portrait !== undefined && (
+            <div className="shrink-0 border-4 border-neon-yellow/70 bg-arcade-deep p-1">
+              <Sprite frame={req.portrait} size={48} />
+            </div>
+          )}
+          <div className="min-w-0 flex-1">
+            <div className="title-pixel text-[9px] text-neon-yellow">🥋 {t('dojoTraining')}</div>
+            <h2 className="title-pixel neon-text mt-1 text-xs text-neon-pink sm:text-sm">{tl(req.courseTitle)}</h2>
+            <p className="mt-1 text-lg text-arcade-muted">
+              {tl(req.title)} · {t('drill')} {req.index + 1}/{req.total}
+            </p>
+          </div>
+          <button className="pixel-btn ghost shrink-0 text-sm" onClick={leave}>
+            ✕ {t('leaveTraining')}
+          </button>
+        </div>
+
+        <div className="mb-3 h-2 bg-arcade-panel">
+          <div className="h-full bg-neon-yellow transition-all" style={{ width: `${(done / req.total) * 100}%` }} />
+        </div>
+        <p className="mb-3 border-l-4 border-neon-green bg-neon-green/10 px-3 py-2 text-lg text-neon-green">
+          {t('trainingNoPenalty')}
+        </p>
+
+        <ChallengeCard
+          c={req.challenge}
+          disabled={phase !== 'answering'}
+          onAnswer={submit}
+          hintAllowed
+          hintShown={hint}
+          hintLabel={t('hintTraining')}
+          onHint={() => {
+            music.sfx('click');
+            setHint(true);
+          }}
+        />
+
+        {phase === 'result' && (
+          <Feedback c={req.challenge} correct={verdict} onNext={next} penalty={false} />
+        )}
+      </div>
+    </div>
+  );
+}
+
+/** Yes/no prompt used by the dojo master before a training module. */
+function ConfirmModal() {
+  const { t, tl } = useT();
+  const { req, resolve } = useGame((s) => s.confirm!);
+  useConfirmKey(() => resolve(true));
+
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') resolve(false);
+    };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [resolve]);
+
+  return (
+    <div className="absolute inset-0 z-50 flex items-center justify-center bg-arcade-deep/85 p-4">
+      <div className="pixel-panel w-full max-w-md animate-pop space-y-5 p-6 text-center" role="dialog" aria-modal="true">
+        <h2 className="title-pixel neon-text text-lg text-neon-yellow">{tl(req.title)}</h2>
+        <p className="text-xl leading-snug">{tl(req.body)}</p>
+        <button autoFocus className="pixel-btn green w-full" onClick={() => resolve(true)}>
+          ▶ {t('trainNow')}
+        </button>
+        <button className="pixel-btn ghost w-full" onClick={() => resolve(false)}>
+          {t('later')}
+        </button>
       </div>
     </div>
   );

@@ -4,6 +4,7 @@ import type { DialogueLine } from '../../store';
 import { DUNGEON } from '../assets';
 import { MapDraft } from '../mapBuilder';
 import { SPEAKERS } from '../story';
+import { withDojo } from './expand';
 import type { LandContent } from './types';
 
 // JS Land · Scriptopolis: the neon city that never blocks, and the Async Harbor where the
@@ -102,7 +103,7 @@ function arena(): MapDraft {
   return d;
 }
 
-export const javascriptLand: LandContent = {
+export const javascriptLand: LandContent = withDojo({
   id: 'javascript',
   music: { scene: 'puzzle', intensity: 0.35 },
   grade: (cam) => {
@@ -234,4 +235,4 @@ export const javascriptLand: LandContent = {
     gateCleared: [narrate('Only calm water remains beyond the gate. The guardian is gone.', 'Seule une eau calme reste derrière la porte. Le gardien n’est plus.')],
   },
   boss: { frame: DUNGEON.crab, tint: 0xb07cff, scale: 4, arena, projectileTint: 0xffffff },
-};
+}, { border: 'T', props: ['T', 't', 'B', 'Y'], floor: '.', plaza: ':', road: '=' });

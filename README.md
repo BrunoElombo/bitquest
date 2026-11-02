@@ -2,10 +2,11 @@
 
 A top-down pixel-art RPG where you learn **JavaScript, TypeScript, Java, Node.js, Python, Git, GitHub, Linux, DevOps and AI** to free Princess Ada from Lord Bugmancer. English and French.
 
-Lord Bugmancer shattered the Source Crystal into ten shards and locked Princess Ada in the Kernel Citadel. Each Land (one per course) is corrupted by a guardian boss. In each Land you:
+Lord Bugmancer shattered the Source Crystal into ten shards and locked Princess Ada in the Kernel Citadel. Each Land (one per course) is corrupted by a guardian boss. All ten Lands are playable. In each Land you:
 
 - explore the map with the **arrow keys / WASD / ZQSD, a gamepad, or the on-screen touch pad**;
-- talk to its people. Each Land is split into 5 zones, each with a guide. At every play session, all the Land's concepts are dealt at random to the zones (easy near the entrance, expert near the boss). The zone's monsters and chest then ask random questions on its concepts, and its guide teaches every one of them, in random order: a nudge before you solve it, the full lesson (✓) after. Together the guides teach every concept of the language;
+- **train at the dojo at the entrance**: its master offers a five-module crash course that drills every challenge of the Land — untimed, with no heart or point at stake. The training grounds next door add six chests and respawning sparring bugs;
+- talk to its people. Each Land is split into 7 zones, each with a guide. At every play session, all the Land's concepts are dealt at random to the zones (easy near the entrance, expert near the boss). The zone's monsters and chest then ask random questions on its concepts, and its guide teaches every one of them, in random order: a nudge before you solve it, the full lesson (✓) after. Together the guides teach every concept of the language;
 - squash roaming **bugs**: touch one and you must answer its timed challenge;
 - solve the **3 enigma shrines** to read Ada's letters, which breaks the boss gate's seal;
 - open **chests** (coding puzzles, including real JS/TS/Python run in the browser);
@@ -30,6 +31,7 @@ The pause menu also offers **Restart from checkpoint** and **Back to the world m
 - A wrong answer or a hit costs a heart; a wrong answer also costs 50 points.
 - Game Over sends you back to your last checkpoint flag and costs 20% of that Land's points.
 - You earn an extra heart every 5,000 points.
+- Timed challenges give you room to think: **45 s** for a monster, **35 s** for a boss rune. The Rogue adds **+5 s** to both. Dojo drills never have a timer.
 
 **Heroes:**
 
@@ -37,16 +39,33 @@ The pause menu also offers **Restart from checkpoint** and **Back to the world m
 |---|---|
 | Knight | +1 heart |
 | Mage | 1 free hint per Land |
-| Rogue | Faster, +3 s on timers |
+| Rogue | Faster, +5 s on timers |
 | Bard | Points ×1.2 |
 
 An account is required to play: the adventure is saved on the server, which validates every answer, point, heart and boss hit.
 
-## Status: milestone 1
+## Status: milestone 2 (ten Lands, dojo crash courses)
 
 | Done | Next |
 |---|---|
-| Accounts, hero select, Hello World Village, world map, **JS Land complete** (story, 5 NPCs, 16 monsters, 3 shrines, 3 chests, checkpoints, Callback Kraken boss), Hall of Fame, Codex, settings | The 8 other Lands and the Kernel Citadel ending (milestone 2), Arena of Champions: vs computer and online duels (milestone 3), Docker + PostgreSQL deployment (milestone 4) |
+| Accounts, hero select, Hello World Village, world map, **all 10 Lands playable** (story, 5 guides, 26 monsters, 3 shrines, 6 chests, dojo + training grounds, checkpoints, a guardian boss each), crash courses for every course, Hall of Fame, Codex, settings | The Kernel Citadel ending, Arena of Champions: vs computer and online duels (milestone 3), Docker + PostgreSQL deployment (milestone 4) |
+
+The four hand-built Lands are **JS, Python, Linux and AI**; the other six use a themed five-zone template with their own guides, stories and bosses. Every Land has the same complete loop.
+
+## Dojos and crash courses
+
+Every Land entrance has a **dojo** with a master and a training grounds. The master's crash course has five modules: four difficulty tiers plus a boss lab. Each module drills **every challenge of its tier** (multiple choice, fill-in, ordering, bug hunt, command, output, riddle and code), reads the explanation with you, and remembers the modules you complete in the save flags. Training never costs a heart or a point and never has a timer, so you can stop mid-module and resume later.
+
+The full syllabus is written out for every course, in English and French:
+
+- [CRASH_COURSES.md](CRASH_COURSES.md) — English
+- [CRASH_COURSES.fr.md](CRASH_COURSES.fr.md) — French
+
+These files are generated from `shared/crashcourse.ts`; regenerate them after editing a course with:
+
+```bash
+npm run crashcourses
+```
 
 ## Getting started
 
@@ -76,16 +95,22 @@ Environment variables (optional):
 ```
 shared/                 Rules used by both client and server
   game.ts               Heroes, Lands, scoring, lives, save format, challenge picking
-  content/*.ts          198 bilingual challenges, one file per course
+  crashcourse.ts        The five-module crash course of every course
+  content/*.ts          220 bilingual challenges, one file per course
   check.ts              Answer checking
   tracks.ts             Courses and their bosses
 server/src/
   routes/auth.ts        Register / login (required to play)
   routes/game.ts        Encounters, damage, checkpoints, boss fights (authoritative)
   routes/me.ts          Profile, settings, new game, leaderboard
+server/scripts/
+  validate-content.ts   Structural checks + runs every reference solution
+  export-crashcourses.ts Regenerates CRASH_COURSES.md and .fr.md
 client/src/
   game/                 Phaser 3 engine
     scenes/             Boot, Village, World map, Land, Boss
+    lands/expand.ts     Wraps a Land with the dojo, training grounds and bigger map
+    lands/template.ts   The six themed template Lands
     lands/javascript.ts JS Land: map, people, monsters, letters, story
     story.ts            Prologue, village and world map texts
     mapBuilder.ts       Code-drafted tilemaps with auto-tiled paths and collisions
@@ -96,11 +121,12 @@ client/public/assets/   Kenney "Tiny Town" and "Tiny Dungeon" sheets (CC0)
 
 ## Adding a Land
 
-1. Create `client/src/game/lands/<land>.ts` following `javascript.ts`. It holds the map draft, NPCs, monsters, signs, story, Ada's three letters and the boss arena.
-2. Register it in `client/src/game/lands/index.ts`.
-3. Set `playable: true` for it in `shared/game.ts`.
+1. Create `client/src/game/lands/<land>.ts` following `javascript.ts`. It holds the map draft, NPCs, monsters, signs, story, Ada's three letters and the boss arena. Wrap the export in `withDojo(content, theme)`: it widens the map, adds the entrance dojo, the training grounds, three extra chests and the master/assistant NPCs.
+2. Add the course's dojo names and crash-course text to `shared/crashcourse.ts` (the `META` table).
+3. Register it in `client/src/game/lands/index.ts`.
+4. Set `playable: true` for it in `shared/game.ts`, and list its chests (`c1`…`c6`).
 
-Challenges come from `shared/content/<course>.ts`. Run `npm run validate` after editing them.
+Challenges come from `shared/content/<course>.ts`. Run `npm run validate` after editing them, and `npm run crashcourses` after editing a course plan.
 
 ## Credits
 

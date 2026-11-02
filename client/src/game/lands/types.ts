@@ -1,6 +1,6 @@
 import type Phaser from 'phaser';
 import type { LandId } from '@shared/game';
-import type { L, Tier } from '@shared/types';
+import type { L, Tier, TrackId } from '@shared/types';
 import type { Scene as MusicScene } from '../../audio/music';
 import type { DialogueLine } from '../../store';
 import type { MapDraft } from '../mapBuilder';
@@ -69,6 +69,16 @@ export interface ZoneDef {
   tiers: Tier[];
 }
 
+/** The training wing every Land gets at its entrance. */
+export interface DojoDef {
+  /** Npc id of the master who runs the crash course. */
+  master: string;
+  /** Npc id of the sparring-bug instructor in the training grounds. */
+  assistant: string;
+  /** Track whose crash course the master teaches. */
+  course: TrackId;
+}
+
 /** Everything that makes a Land unique: its map, people, monsters and story. */
 export interface LandContent {
   id: LandId;
@@ -81,6 +91,8 @@ export interface LandContent {
   /** Which questions are asked where, and who gives the hints for them. */
   zones: ZoneDef[];
   signs: Record<string, L>;
+  /** Present on playable Lands: the master, the sparring instructor and the course they teach. */
+  dojo?: DojoDef;
   story: {
     intro: DialogueLine[];
     shrineIntro: DialogueLine[];

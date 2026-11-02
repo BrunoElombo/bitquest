@@ -5,6 +5,7 @@ import type { DialogueLine } from '../../store';
 import { DUNGEON } from '../assets';
 import { MapDraft } from '../mapBuilder';
 import { SPEAKERS } from '../story';
+import { withDojo } from './expand';
 import type { LandContent } from './types';
 
 // Linux Land · Penguin Peaks: snowy mountains, the shell caves dug under them, and Kernel Pass
@@ -101,7 +102,7 @@ function arena(): MapDraft {
   return d;
 }
 
-export const linuxLand: LandContent = {
+export const linuxLand: LandContent = withDojo({
   id: 'linux',
   music: { scene: 'focus', intensity: 0.35 },
   grade: (cam) => {
@@ -248,4 +249,4 @@ export const linuxLand: LandContent = {
     movement: 'stomp',
     attacks: { 1: ['rain', 'fan'], 2: ['rain', 'fan', 'rain'], 3: ['rain', 'ring', 'fan'] },
   },
-};
+}, { border: 'N', props: ['N', 'N', 'R', 'K'], floor: 's', plaza: 'c', road: 'c' });

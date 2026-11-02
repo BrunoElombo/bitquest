@@ -31,26 +31,55 @@ const deals = new Map<LandId, ZoneDeal>();
 export function dealZones(content: LandContent, markers: Marker[]): ZoneDeal {
   const cached = deals.get(content.id);
   if (cached) return cached;
-  const left = shuffle([...CHALLENGES_BY_TRACK[content.id]]);
   const deal: ZoneDeal = new Map(content.zones.map((z) => [z, []]));
-  const has = (z: ZoneDef, type: Marker['type']) => markers.some((m) => m.type === type && zoneAt(content, m.x, m.y) === z);
-  const take = (z: ZoneDef, kinds: Challenge['kind'][]) => {
-    const i = left.findIndex((c) => z.tiers.includes(c.tier) && kinds.includes(c.kind));
-    if (i >= 0) deal.get(z)!.push(...left.splice(i, 1));
-  };
 
-  // Every chest and every group of monsters first gets one question it can actually ask…
+  // Count what each zone can actually ask: one question per monster and per chest. A zone
+  // without any encounter is skipped, otherwise questions would be dealt where nobody asks them.
+  const caps = new Map<ZoneDef, { monster: number; chest: number }>();
   for (const z of content.zones) {
-    if (has(z, 'chest')) take(z, ENCOUNTER_KINDS.chest);
-    if (has(z, 'monster')) take(z, ENCOUNTER_KINDS.monster);
+    const inZone = (type: Marker['type']) => markers.filter((m) => m.type === type && zoneAt(content, m.x, m.y) === z).length;
+    caps.set(z, { monster: inZone('monster'), chest: inZone('chest') });
   }
-  // …then the rest go to the least loaded zone of a matching difficulty.
-  for (const c of left) {
-    const fits = content.zones.filter((z) => z.tiers.includes(c.tier));
-    const pool = fits.length ? fits : content.zones;
-    const fewest = Math.min(...pool.map((z) => deal.get(z)!.length));
-    const choices = pool.filter((z) => deal.get(z)!.length === fewest);
-    deal.get(choices[Math.floor(Math.random() * choices.length)])!.push(c);
+  const active = content.zones.filter((z) => {
+    const c = caps.get(z)!;
+    return c.monster + c.chest > 0;
+  });
+  if (!active.length) {
+    deals.set(content.id, deal);
+    return deal;
+  }
+  const assigned = new Map<ZoneDef, number>(active.map((z) => [z, 0]));
+
+  const canMonster = (c: Challenge) => ENCOUNTER_KINDS.monster.includes(c.kind);
+  const canChest = (c: Challenge) => ENCOUNTER_KINDS.chest.includes(c.kind);
+  const chestOnly = (c: Challenge) => !canMonster(c);
+
+  // Chest-only challenge kinds (ordering, code) are dealt first so their chests are never
+  // stolen by a multiple-choice question that a monster could have asked.
+  const queue = shuffle([...CHALLENGES_BY_TRACK[content.id]]).sort(
+    (a, b) => Number(chestOnly(b)) - Number(chestOnly(a)),
+  );
+
+  for (const c of queue) {
+    const byTier = active.filter((z) => z.tiers.includes(c.tier));
+    // Prefer a zone whose difficulty matches; fall back to the whole Land if it is full.
+    for (const pool of [byTier.length ? byTier : active, active]) {
+      const options: { zone: ZoneDef; side: 'monster' | 'chest' }[] = [];
+      for (const z of pool) {
+        const cap = caps.get(z)!;
+        if (cap.monster > 0 && canMonster(c)) options.push({ zone: z, side: 'monster' });
+        if (cap.chest > 0 && canChest(c)) options.push({ zone: z, side: 'chest' });
+      }
+      const usable = chestOnly(c) ? options.filter((o) => o.side === 'chest') : options;
+      if (!usable.length) continue;
+      const fewest = Math.min(...usable.map((o) => assigned.get(o.zone)!));
+      const choices = usable.filter((o) => assigned.get(o.zone) === fewest);
+      const pick = choices[Math.floor(Math.random() * choices.length)];
+      deal.get(pick.zone)!.push(c);
+      assigned.set(pick.zone, assigned.get(pick.zone)! + 1);
+      caps.get(pick.zone)![pick.side]--;
+      break;
+    }
   }
   deals.set(content.id, deal);
   return deal;

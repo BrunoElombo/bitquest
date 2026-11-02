@@ -47,11 +47,11 @@ export const HEROES: Record<HeroClass, HeroDef> = {
   rogue: {
     id: 'rogue',
     name: { en: 'Rogue', fr: 'Voleur' },
-    perk: { en: 'Moves faster, +3 s on timed challenges', fr: 'Plus rapide, +3 s sur les défis chronométrés' },
+    perk: { en: 'Moves faster, +5 s on timed challenges', fr: 'Plus rapide, +5 s sur les défis chronométrés' },
     skins: [112, 98],
     maxHearts: 3,
     speed: 92,
-    timerBonusMs: 3000,
+    timerBonusMs: 5000,
     pointsMultiplier: 1,
     freeHintsPerLand: 0,
   },
@@ -95,7 +95,7 @@ export const LANDS: Record<LandId, LandDef> = {
     name: { en: 'JS Land · Scriptopolis', fr: 'Terre JS · Scriptopolis' },
     requires: [],
     playable: true,
-    chests: ['c1', 'c2', 'c3'],
+    chests: ['c1', 'c2', 'c3', 'c4', 'c5', 'c6'],
     bossHits: 6,
     spellWord: { en: 'RESOLVE', fr: 'RÉSOUDS' },
   },
@@ -104,7 +104,7 @@ export const LANDS: Record<LandId, LandDef> = {
     name: { en: 'Python Land · Pythonia', fr: 'Terre Python · Pythonia' },
     requires: [],
     playable: true,
-    chests: ['c1', 'c2', 'c3'],
+    chests: ['c1', 'c2', 'c3', 'c4', 'c5', 'c6'],
     bossHits: 6,
     spellWord: { en: 'IMPORT', fr: 'IMPORTE' },
   },
@@ -113,7 +113,7 @@ export const LANDS: Record<LandId, LandDef> = {
     name: { en: 'Linux Land · Penguin Peaks', fr: 'Terre Linux · Pics du Pingouin' },
     requires: [],
     playable: true,
-    chests: ['c1', 'c2', 'c3'],
+    chests: ['c1', 'c2', 'c3', 'c4', 'c5', 'c6'],
     bossHits: 6,
     spellWord: { en: 'MOUNT', fr: 'MONTE' },
   },
@@ -121,8 +121,8 @@ export const LANDS: Record<LandId, LandDef> = {
     id: 'typescript',
     name: { en: 'TypeScript Land · Typeholm', fr: 'Terre TypeScript · Typeholm' },
     requires: ['javascript'],
-    playable: false,
-    chests: ['c1', 'c2', 'c3'],
+    playable: true,
+    chests: ['c1', 'c2', 'c3', 'c4', 'c5', 'c6'],
     bossHits: 7,
     spellWord: { en: 'DECLARE', fr: 'DÉCLARE' },
   },
@@ -130,8 +130,8 @@ export const LANDS: Record<LandId, LandDef> = {
     id: 'nodejs',
     name: { en: 'Node Land · Nodeheim', fr: 'Terre Node · Nodeheim' },
     requires: ['javascript'],
-    playable: false,
-    chests: ['c1', 'c2', 'c3'],
+    playable: true,
+    chests: ['c1', 'c2', 'c3', 'c4', 'c5', 'c6'],
     bossHits: 7,
     spellWord: { en: 'LISTEN', fr: 'ÉCOUTE' },
   },
@@ -139,8 +139,8 @@ export const LANDS: Record<LandId, LandDef> = {
     id: 'java',
     name: { en: 'Java Land · Javalon', fr: 'Terre Java · Javalon' },
     requires: ['python'],
-    playable: false,
-    chests: ['c1', 'c2', 'c3'],
+    playable: true,
+    chests: ['c1', 'c2', 'c3', 'c4', 'c5', 'c6'],
     bossHits: 7,
     spellWord: { en: 'CONSTRUCT', fr: 'CONSTRUIS' },
   },
@@ -148,8 +148,8 @@ export const LANDS: Record<LandId, LandDef> = {
     id: 'git',
     name: { en: 'Git Land · Branchwood', fr: 'Terre Git · Bois-Branche' },
     requires: ['linux'],
-    playable: false,
-    chests: ['c1', 'c2', 'c3'],
+    playable: true,
+    chests: ['c1', 'c2', 'c3', 'c4', 'c5', 'c6'],
     bossHits: 7,
     spellWord: { en: 'COMMIT', fr: 'VALIDE' },
   },
@@ -157,8 +157,8 @@ export const LANDS: Record<LandId, LandDef> = {
     id: 'github',
     name: { en: 'GitHub Land · Octoport', fr: 'Terre GitHub · Octoport' },
     requires: ['git'],
-    playable: false,
-    chests: ['c1', 'c2', 'c3'],
+    playable: true,
+    chests: ['c1', 'c2', 'c3', 'c4', 'c5', 'c6'],
     bossHits: 7,
     spellWord: { en: 'MERGE', fr: 'FUSIONNE' },
   },
@@ -166,8 +166,8 @@ export const LANDS: Record<LandId, LandDef> = {
     id: 'devops',
     name: { en: 'DevOps Land · Cloud Isles', fr: 'Terre DevOps · Îles Nuages' },
     requires: ['nodejs', 'git'],
-    playable: false,
-    chests: ['c1', 'c2', 'c3'],
+    playable: true,
+    chests: ['c1', 'c2', 'c3', 'c4', 'c5', 'c6'],
     bossHits: 8,
     spellWord: { en: 'DEPLOY', fr: 'DÉPLOIE' },
   },
@@ -176,7 +176,7 @@ export const LANDS: Record<LandId, LandDef> = {
     name: { en: 'AI Land · Neuralis', fr: 'Terre IA · Neuralis' },
     requires: ['python'],
     playable: true,
-    chests: ['c1', 'c2', 'c3'],
+    chests: ['c1', 'c2', 'c3', 'c4', 'c5', 'c6'],
     bossHits: 7,
     spellWord: { en: 'LEARN', fr: 'APPRENDS' },
   },
@@ -202,7 +202,11 @@ export const EXTRA_LIFE_EVERY = 5000;
 export const EXTRA_HEARTS_CAP = 2;
 /** Share of the current Land's points lost on Game Over. */
 export const GAME_OVER_PENALTY = 0.2;
-export const ENCOUNTER_TIME_MS = { monster: 25000, boss: 20000 };
+/**
+ * Timed challenges leave room to read the question, think, and only then answer.
+ * The Rogue adds +5 s on top of both.
+ */
+export const ENCOUNTER_TIME_MS = { monster: 45000, boss: 35000 };
 /** Network/rendering slack the server tolerates on timers. */
 export const TIMER_SLACK_MS = 2500;
 

@@ -87,12 +87,15 @@ export function Feedback({
   timedOut,
   onNext,
   points,
+  penalty = true,
 }: {
   c: Challenge;
   correct: boolean;
   timedOut?: boolean;
   onNext: () => void;
   points?: number;
+  /** False in the dojo: no heart is lost, so do not claim one was. */
+  penalty?: boolean;
 }) {
   const { t, tl, lang } = useT();
 
@@ -126,7 +129,11 @@ export function Feedback({
             {points} pts
           </span>
         )}
-        {!correct && <span className="title-pixel text-xs text-neon-red">{t('heartLost')}</span>}
+        {!correct && (
+          <span className={`title-pixel text-xs ${penalty ? 'text-neon-red' : 'text-arcade-muted'}`}>
+            {penalty ? t('heartLost') : t('trainingNoPenalty')}
+          </span>
+        )}
       </div>
 
       {!correct && c.kind !== 'mcq' && c.kind !== 'bug' && c.kind !== 'order' && (

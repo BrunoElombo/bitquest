@@ -61,6 +61,31 @@ export interface EncounterUIRequest {
   hintAllowed: boolean;
 }
 
+/** One dojo drill: a real challenge, but untimed and without any heart at stake. */
+export interface TrainingUIRequest {
+  land: LandId;
+  challenge: Challenge;
+  /** Crash course and module names, e.g. "JavaScript crash course" / "Foundations". */
+  courseTitle: L;
+  title: L;
+  master: L;
+  /** 0-based drill index inside the module and the module's drill count. */
+  index: number;
+  total: number;
+  portrait?: number;
+}
+
+export interface TrainingResult {
+  correct: boolean;
+  /** True when the learner left the dojo before finishing the module. */
+  skipped: boolean;
+}
+
+export interface ConfirmRequest {
+  title: L;
+  body: L;
+}
+
 export type PauseAction = 'resume' | 'quit' | 'checkpoint' | 'world';
 
 /** Which part of the pause menu opens first. */
@@ -95,6 +120,8 @@ interface GameState {
   // Overlays the game waits on
   dialogue: { lines: DialogueLine[]; resolve: () => void } | null;
   encounter: { req: EncounterUIRequest; resolve: (r: EncounterResponse) => void } | null;
+  training: { req: TrainingUIRequest; resolve: (r: TrainingResult) => void } | null;
+  confirm: { req: ConfirmRequest; resolve: (ok: boolean) => void } | null;
   pause: { req: PauseRequest; resolve: (a: PauseAction) => void } | null;
   gameOver: { info: GameOverInfo; resolve: () => void } | null;
   banner: { id: number; title: string; sub?: string } | null;
@@ -160,6 +187,8 @@ export const useGame = create<GameState>((set, get) => {
     boss: null,
     dialogue: null,
     encounter: null,
+    training: null,
+    confirm: null,
     pause: null,
     gameOver: null,
     banner: null,

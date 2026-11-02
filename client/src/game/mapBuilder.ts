@@ -48,13 +48,15 @@ export const DECO: Record<string, { gid: number; solid: boolean }> = {
 };
 
 export interface Marker {
-  type: 'spawn' | 'checkpoint' | 'shrine' | 'chest' | 'npc' | 'monster' | 'exit' | 'bossGate' | 'sign' | 'gate' | 'light';
+  type: 'spawn' | 'checkpoint' | 'shrine' | 'chest' | 'npc' | 'monster' | 'exit' | 'bossGate' | 'sign' | 'gate' | 'light' | 'dojo';
   x: number;
   y: number;
   id?: string;
   tier?: 1 | 2 | 3;
   w?: number;
   h?: number;
+  /** Training-ground sparring bug: comes back after a short rest. */
+  respawn?: boolean;
 }
 
 export class MapDraft {

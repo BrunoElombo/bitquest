@@ -82,6 +82,18 @@ const STRINGS = {
   console: { en: 'Console', fr: 'Console' },
   testsPassed: { en: 'All tests passed!', fr: 'Tous les tests passent !' },
   checkpointSaved: { en: 'Checkpoint saved', fr: 'Point de contrôle enregistré' },
+  // Dojo
+  dojoTraining: { en: 'DOJO TRAINING', fr: 'ENTRAÎNEMENT AU DOJO' },
+  drill: { en: 'DRILL', fr: 'DÉFI' },
+  leaveTraining: { en: 'Leave training', fr: 'Quitter l’entraînement' },
+  trainingNoPenalty: { en: 'No heart lost — this is training.', fr: 'Aucun cœur perdu — c’est l’entraînement.' },
+  hintTraining: { en: 'Hint (training: free)', fr: 'Indice (entraînement : gratuit)' },
+  trainNow: { en: 'Train', fr: 'S’entraîner' },
+  later: { en: 'Not yet', fr: 'Pas maintenant' },
+  dojoOffer: { en: 'Train with the master?', fr: 'S’entraîner avec le maître ?' },
+  moduleComplete: { en: 'Module complete!', fr: 'Module terminé !' },
+  courseComplete: { en: 'Crash course complete!', fr: 'Cours accéléré terminé !' },
+  dojo: { en: 'DOJO', fr: 'DOJO' },
   // Pages
   leaderboard: { en: 'Hall of Fame', fr: 'Panthéon' },
   codex: { en: 'Codex', fr: 'Codex' },

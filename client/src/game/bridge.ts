@@ -1,5 +1,14 @@
 import type { EncounterResponse, GameOverInfo } from '@shared/game';
-import { useGame, type DialogueLine, type EncounterUIRequest, type PauseAction, type PauseRequest } from '../store';
+import {
+  useGame,
+  type ConfirmRequest,
+  type DialogueLine,
+  type EncounterUIRequest,
+  type PauseAction,
+  type PauseRequest,
+  type TrainingResult,
+  type TrainingUIRequest,
+} from '../store';
 
 // Phaser scenes talk to the React overlay through these promise-returning calls:
 // the scene awaits while the player reads a dialogue or answers a challenge.
@@ -28,6 +37,35 @@ export const ui = {
           resolve: (r) => {
             useGame.setState({ encounter: null });
             resolve(r);
+          },
+        },
+      }),
+    );
+  },
+
+  /** A dojo drill. The caller gets the local verdict; nothing is sent to the server. */
+  train(req: TrainingUIRequest): Promise<TrainingResult> {
+    return new Promise((resolve) =>
+      useGame.setState({
+        training: {
+          req,
+          resolve: (r) => {
+            useGame.setState({ training: null });
+            resolve(r);
+          },
+        },
+      }),
+    );
+  },
+
+  confirm(req: ConfirmRequest): Promise<boolean> {
+    return new Promise((resolve) =>
+      useGame.setState({
+        confirm: {
+          req,
+          resolve: (ok) => {
+            useGame.setState({ confirm: null });
+            resolve(ok);
           },
         },
       }),

@@ -5,6 +5,7 @@ import type { DialogueLine } from '../../store';
 import { DUNGEON } from '../assets';
 import { MapDraft } from '../mapBuilder';
 import { SPEAKERS } from '../story';
+import { withDojo } from './expand';
 import type { LandContent } from './types';
 
 // Python Land · Pythonia: a jungle temple where indentation is law, and the Sunken Sanctum
@@ -114,7 +115,7 @@ function arena(): MapDraft {
   return d;
 }
 
-export const pythonLand: LandContent = {
+export const pythonLand: LandContent = withDojo({
   id: 'python',
   music: { scene: 'enigma', intensity: 0.35 },
   grade: (cam) => {
@@ -259,4 +260,4 @@ export const pythonLand: LandContent = {
     movement: 'slither',
     attacks: { 1: ['fan', 'wall'], 2: ['wall', 'fan', 'fan'], 3: ['wall', 'ring', 'fan'] },
   },
-};
+}, { border: 'P', props: ['P', 'P', 'e', 'R'], floor: 'j', plaza: 'o', road: 'o' });

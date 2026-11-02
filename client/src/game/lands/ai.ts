@@ -5,6 +5,7 @@ import type { DialogueLine } from '../../store';
 import { DUNGEON } from '../assets';
 import { MapDraft } from '../mapBuilder';
 import { SPEAKERS } from '../story';
+import { withDojo } from './expand';
 import type { LandContent } from './types';
 
 // AI Land · Neuralis: the city that learns, built on circuit boards and server racks, where the
@@ -101,7 +102,7 @@ function arena(): MapDraft {
   return d;
 }
 
-export const aiLand: LandContent = {
+export const aiLand: LandContent = withDojo({
   id: 'ai',
   music: { scene: 'puzzle', intensity: 0.4 },
   grade: (cam) => {
@@ -251,4 +252,4 @@ export const aiLand: LandContent = {
     movement: 'drift',
     attacks: { 1: ['fan', 'rain'], 2: ['ring', 'fan', 'wall'], 3: ['ring', 'wall', 'fan', 'rain'] },
   },
-};
+}, { border: 'S', props: ['T', 't', 'B'], floor: 'u', plaza: 'u', road: '#' });
